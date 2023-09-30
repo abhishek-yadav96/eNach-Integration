@@ -72,8 +72,8 @@ public function generateTokenAndRedirect(Request $request)
         $expYear = $request->input('expYear');
         $cvvCode = $request->input('cvvCode');
         
-        $this->saltKey = '5461715864CSLUTF';
-        $merchantId = 'T900013'; 
+        $this->saltKey = '5465446546864CSTYHGSHSHS'; = demo key pass
+        $merchantId = 'T4673290'; = demo key pass 
 
         // Combine all the parameters with pipe character as a separator
         $consumerData = "{$merchantId}|{$txnId}|{$totalAmount}|{$accountNo}|{$consumerId}|{$consumerMobileNo}|{$consumerEmailId}|{$debitStartDate}|{$debitEndDate}|{$maxAmount}|{$amountType}|{$frequency}|{$cardNumber}|{$expMonth}|{$expYear}|{$cvvCode}|{$this->saltKey}";
