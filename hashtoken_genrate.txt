@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Stripe\Stripe;
+use Session;
+use Stripe\Charge;
+
+class TokenController extends Controller
+ {
+
+public function generateTokenAndRedirect(Request $request)
+{
+        //Retrieve the token from the form submission
+        $token = $request->input('token');
+
+        // Redirect the user to the payment page using the token
+        return redirect()->route('payment', ['token' => $token]);
+}
+
+
+
+    public function getTransactionData()
+    {
+       
+    }
+
+   public function showPaymentForm()
+    {
+        // Your logic to generate token hash or other data
+        $hash = generateTokenHash(); // Replace with your logic
+
+        return view('payment_form', ['hash' => $hash]);
+    }
+
+    public function processPayment(Request $request)
+    {
+     
+    }
+
+    public function generateTokenFromForm(Request $request)
+    {
+        
+        function generateRandomHex($length) {
+    $characters = '0123456789abcdef';
+    $string = '';
+
+    for ($i = 0; $i < $length; $i++) {
+        $string .= $characters[mt_rand(0, strlen($characters) - 1)];
+    }
+
+    return $string;
+}
+        
+        // Get the form data from the request
+        $txnId = generateRandomHex(12);
+        $totalAmount = $request->input('totalamount');
+        $accountNo = $request->input('accountNo');
+        $consumerId = $request->input('consumerId');
+        $consumerMobileNo = $request->input('consumerMobileNo');
+        $consumerEmailId = $request->input('consumerEmailId');
+        $debitStartDate = $request->input('debitStartDate');
+        $debitEndDate = $request->input('debitEndDate');
+        $maxAmount = $request->input('maxAmount');
+        $amountType = $request->input('amountType');
+        $frequency = $request->input('frequency');
+        $cardNumber = $request->input('cardNumber');
+        $expMonth = $request->input('expMonth');
+        $expYear = $request->input('expYear');
+        $cvvCode = $request->input('cvvCode');
+        
+        $this->saltKey = '5461715864CSLUTF';
+        $merchantId = 'T900013'; 
+
+        // Combine all the parameters with pipe character as a separator
+        $consumerData = "{$merchantId}|{$txnId}|{$totalAmount}|{$accountNo}|{$consumerId}|{$consumerMobileNo}|{$consumerEmailId}|{$debitStartDate}|{$debitEndDate}|{$maxAmount}|{$amountType}|{$frequency}|{$cardNumber}|{$expMonth}|{$expYear}|{$cvvCode}|{$this->saltKey}";
+      
+        // Combine consumer data and hash to create the token
+        $token = "{$consumerData}";
+         // Generate the hash using SHA-512
+        $hash = hash('sha512', $token);
+
+         return view('payment_form', [
+        'txnId' => $txnId,
+        'totalAmount' => $totalAmount,
+        'hash' => $hash,
+        'accountNo' => $accountNo,
+        'consumerId' => $consumerId,
+        'consumerMobileNo' => $consumerMobileNo,
+        'consumerEmailId' => $consumerEmailId, // Add this line
+        'debitStartDate' => $debitStartDate,   // Add this line
+        'debitEndDate' => $debitEndDate,       // Add this line
+        'maxAmount' => $maxAmount,             // Add this line
+        'amountType' => $amountType,           // Add this line
+        'frequency' => $frequency,             // Add this line
+        'cardNumber' => $cardNumber,           // Add this line
+        'expMonth' => $expMonth,               // Add this line
+        'expYear' => $expYear,                 // Add this line
+        'cvvCode' => $cvvCode,                 // Add this line
+        'merchantId' => $merchantId, 
+        ]);
+    }
+
+    public function showForm()
+    {
+        return view('token-form');
+    }
+}
